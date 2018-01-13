@@ -50,7 +50,59 @@ void InitializeDisplay()
 						| GPIO_MODER_MODER2_0 | GPIO_MODER_MODER3_0
 						| GPIO_MODER_MODER4_0 | GPIO_MODER_MODER5_0
 						| GPIO_MODER_MODER6_0 | GPIO_MODER_MODER7_0;
+
+	// Switching display on
+	SendToDisplay(0b00111111 | (1 << STD_COMMAND));
 }
 
+void Delay()
+{
+	volatile uint32_t timer = 0x3FFF;
+	while (timer--);
+}
+
+void SendToDisplay(uint16_t data)
+{
+	GPIOB->ODR = data & DISP_DATA_MASK;
+
+	// Both controllers off
+	uint16_t toPort = (1 << DISP_CS1) | (1 << DISP_CS2);
+
+	if ((data & (1 << STD_COMMAND)) != 0)
+	{
+		// Command, writing to both controllers
+		toPort &= ~((1 << DISP_CS1) | (1 << DISP_CS2));
+	}
+	else
+	{
+		// Data
+		toPort |= (1 << DISP_DC);
+
+		// To what controller?
+		if ((data & (1 << STD_LEFT_CTRLR)) != 0)
+		{
+			toPort &= ~(1 << DISP_CS1);
+		}
+		else
+		{
+			toPort &= ~(1 << DISP_CS2);
+		}
+	}
+
+	GPIOA->ODR = toPort;
+
+	Delay();
+
+	toPort |= (1 << DISP_E);
+	GPIOA->ODR = toPort;
+
+	Delay();
+
+	toPort &= ~(1 << DISP_E);
+	toPort |= (1 << DISP_CS1) | (1 << DISP_CS2);
+	GPIOA->ODR = toPort;
+
+	Delay();
+}
 
 
