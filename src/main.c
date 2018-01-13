@@ -32,10 +32,23 @@ int main(int argc, char* argv[])
 	// Initializing hardware (clock and so on)
 	InitializeHardware();
 
+	GPIOB->ODR = 0x00;
+	GPIOA->ODR &= ~(1 << DISP_CS1);
+	GPIOA->ODR &= ~(1 << DISP_CS2);
+	GPIOA->ODR |= (1 << DISP_DC);
+
 	// Infinite loop
 	while (1)
 	{
-		// Add your code here.
+		GPIOA->ODR &= ~(1 << DISP_E);
+
+		for(uint32_t i = 0; i < 100000; i++) {}
+
+		GPIOA->ODR |= (1 << DISP_E);
+
+		for(uint32_t i = 0; i < 100000; i++) {}
+
+		GPIOB->ODR ++;
 	}
 }
 

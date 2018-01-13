@@ -12,6 +12,7 @@
 #include <stdlib.h>
 #include "diag/Trace.h"
 #include "HAL/hal.h"
+#include "HAL/display/driver_implementation.h"
 
 /**
  * Entry point.

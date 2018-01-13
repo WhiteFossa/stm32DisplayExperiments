@@ -7,9 +7,15 @@
 
 #include "hal.h"
 
+#include "display/driver_implementation.h"
+
 void InitializeHardware(void)
 {
+	// Clocking up
 	SetFullClock();
+
+	// Initializing display
+	InitializeDisplay();
 }
 
 void SetFullClock(void)
